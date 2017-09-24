@@ -1,3 +1,39 @@
+/**
+ * Simplified, shallow equivalent of jquery.extend
+ * @param modified_obj
+ * @param modifying_obj
+ */
+function update_object(modified_obj, modifying_obj)
+{
+    for(var key in modifying_obj)
+    {
+        if(modifying_obj.hasOwnProperty(key))
+        {
+            modified_obj[key] = modifying_obj[key]
+        }
+    }
+}
+
+function prepareSVG(element)
+{
+    return d3
+        .select(element)
+        .append('svg')
+        .attr('preserveAspectRatio', 'xMinYMin meet')
+        .attr('class', 'svg-content-responsive')
+}
+
+function prepareZoom(min, max, callback)
+{
+    return d3.behavior.zoom()
+        .scaleExtent([min, max])
+        .on('zoom', callback)
+        // allows to differentiate between pan-related clicks and normal clicks
+        .on('zoomstart', function(){
+            if(d3.event.sourceEvent) d3.event.sourceEvent.stopPropagation()
+        })
+}
+
 var NeedlePlot = function ()
 {
     var svg, zoom, vis, vertical_scalable, unit
@@ -66,6 +102,43 @@ var NeedlePlot = function ()
         y: new Axis()
     }
 
+    var MinimalTooltip = function(config)
+    {
+        var self = this
+
+        this.moveToElement = function(){}
+        this.moveToPointer = function(){
+            self.tooltip
+                .style('left', d3.event.clientX + 'px')
+                .style('top', d3.event.clientY + 'px')
+        }
+
+        this.show = function (d) {
+            self.tooltip.html(self.render(d))
+            self.tooltip.style('opacity', 1)
+            self.moveToPointer()
+        }
+
+        this.hide = function () {
+            self.tooltip.style('opacity', 0)
+        }
+
+        this.bind = function(selection)
+        {
+            self.tooltip = d3.select('body')
+                .append('div')
+                .attr('class', 'tooltip popover')
+                .style('pointer-events', 'none')
+                .style('position', 'fixed')
+
+            self.render = config.render
+            self.hide()
+
+            selection.on('mouseover', self.show)
+            selection.on('mouseout', self.hide)
+        }
+    }
+
     var config = {
         use_log: false, // should logarithmic (base 10) scale by used instead of linear?
         site_height: 10,
@@ -91,10 +164,9 @@ var NeedlePlot = function ()
         mutations_color_map: {
             // mutation_category: color
         },
-        // templates for tooltips
-        needle_tooltip: null,
-        needle_tooltip_callback: null,
-        site_tooltip: null
+        // tooltips
+        needle_tooltip: new MinimalTooltip({render: function(mutation){return mutation.pos}}),
+        site_tooltip: new MinimalTooltip({render: function(site){return site.type}})
     }
 
     function _adjustPlotDimensions()
@@ -122,8 +194,6 @@ var NeedlePlot = function ()
     {
         // Automatic configuration update:
         update_object(config, new_config)
-
-        get_remote_if_needed(config, 'data')
 
         // Manual configuration patching:
         _adjustPlotDimensions()
@@ -443,26 +513,12 @@ var NeedlePlot = function ()
                 .style('text-anchor','middle')
         }
 
-        var needle_tooltip = Tooltip()
-        needle_tooltip.init({
-            id: 'needle',
-            template: config.needle_tooltip,
-            callback: config.needle_tooltip_callback
-        })
 
-        needles = create_needles(vis, needle_tooltip)
-
-        var site_tooltip = Tooltip()
-
-        site_tooltip.init({
-            id: 'site',
-            template: config.site_tooltip,
-            viewport: config.element.parentNode
-        })
+        needles = create_needles(vis, config.needle_tooltip)
 
         dispatch.on('zoomAndMove', function(){
-            needle_tooltip.moveToElement()
-            site_tooltip.moveToElement()
+            config.needle_tooltip.moveToElement()
+            config.site_tooltip.moveToElement()
         })
 
         sites = vis.selectAll('.site')
@@ -477,7 +533,7 @@ var NeedlePlot = function ()
                         return 'site multi_ptm'
                 }
             )
-            .call(site_tooltip.bind)
+            .call(config.site_tooltip.bind)
 
         sites
             .append('path')
