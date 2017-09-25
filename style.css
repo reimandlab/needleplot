@@ -1,0 +1,32 @@
+.tooltip
+{
+    background: #fff;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.needleplot
+{
+    font-family: "Helvetica Neue", Helvetica,Arial, sans-serif;
+    background: white;
+}
+
+.needleplot .axis{
+    shape-rendering: crispEdges
+}
+
+.needleplot .minor{
+    stroke-opacity: .5
+}
+
+.needleplot line, path
+{
+    fill: none;
+    stroke: #000
+}
+
+.needleplot .needle line
+{
+    stroke: black
+}

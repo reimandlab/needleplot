@@ -14,26 +14,6 @@ function update_object(modified_obj, modifying_obj)
     }
 }
 
-function prepareSVG(element)
-{
-    return d3
-        .select(element)
-        .append('svg')
-        .attr('preserveAspectRatio', 'xMinYMin meet')
-        .attr('class', 'svg-content-responsive')
-}
-
-function prepareZoom(min, max, callback)
-{
-    return d3.behavior.zoom()
-        .scaleExtent([min, max])
-        .on('zoom', callback)
-        // allows to differentiate between pan-related clicks and normal clicks
-        .on('zoomstart', function(){
-            if(d3.event.sourceEvent) d3.event.sourceEvent.stopPropagation()
-        })
-}
-
 var NeedlePlot = function ()
 {
     var svg, zoom, vis, vertical_scalable, unit
@@ -102,7 +82,7 @@ var NeedlePlot = function ()
         y: new Axis()
     }
 
-    var MinimalTooltip = function(config)
+    var MinimalTooltip = function(tooltip_config)
     {
         var self = this
 
@@ -125,13 +105,13 @@ var NeedlePlot = function ()
 
         this.bind = function(selection)
         {
-            self.tooltip = d3.select('body')
+            self.tooltip = d3.select(config.element)
                 .append('div')
-                .attr('class', 'tooltip popover')
+                .attr('class', 'tooltip')
                 .style('pointer-events', 'none')
                 .style('position', 'fixed')
 
-            self.render = config.render
+            self.render = tooltip_config.render
             self.hide()
 
             selection.on('mouseover', self.show)
@@ -144,9 +124,9 @@ var NeedlePlot = function ()
         site_height: 10,
         animations_speed: 300,
         // 90 is width of description
-        paddings: {bottom: 40, top: 30, left: 89, right: 1},
+        paddings: {bottom: 60, top: 30, left: 90, right: 5},
         y_scale: 'auto',
-        sequenceLength: null,
+        sequence_length: null,
         element: null,
         data: {
             mutations: null,
@@ -159,7 +139,8 @@ var NeedlePlot = function ()
         position_callback: null,
         ratio: 0.5,
         min_zoom: 1,
-        max_zoom: 10,
+        max_zoom: 6,
+        head_size: 6,
         // colors of sites are determined by their's css class
         mutations_color_map: {
             // mutation_category: color
@@ -169,11 +150,11 @@ var NeedlePlot = function ()
         site_tooltip: new MinimalTooltip({render: function(site){return site.type}})
     }
 
-    function _adjustPlotDimensions()
+    function _adjust_plot_dimensions()
     {
         if(!config.width && !config.height)
         {
-            config.width = config.sequenceLength
+            config.width = config.sequence_length
         }
 
         if(config.height && config.width)
@@ -196,7 +177,7 @@ var NeedlePlot = function ()
         update_object(config, new_config)
 
         // Manual configuration patching:
-        _adjustPlotDimensions()
+        _adjust_plot_dimensions()
 
     }
 
@@ -207,7 +188,7 @@ var NeedlePlot = function ()
 	    return yiq < 128
     }
 
-    function scaleToNeedles()
+    function scale_to_needles()
     {
 		if (config.y_scale === 'auto')
 		{
@@ -219,23 +200,25 @@ var NeedlePlot = function ()
 		}
     }
 
-    function _rescalePlot()
+    function _rescale_plot()
     {
         svg
             .attr('viewBox', '0 0 ' + config.width + ' ' + config.height)
 
-		unit = (config.width - config.paddings.left - config.paddings.right) / config.sequenceLength
+		unit = (config.width - config.paddings.left - config.paddings.right) / config.sequence_length
 
         axes.x.scale
             .range([0, config.width - config.paddings.left - config.paddings.right])
 
         axes.y.scale
-            .range([config.height - config.paddings.top - config.site_height, config.paddings.bottom])
+            .range([config.height - config.paddings.bottom, config.paddings.top])
+
 
         axes.y.obj.scale(axes.y.scale)
-        axes.y.group.call(axes.y.obj)
+        axes.y.group
+            .call(axes.y.obj)
 
-		var bottom_axis_pos = config.height - config.paddings.bottom
+        var bottom_axis_pos = config.height - config.paddings.bottom
 
         axes.x.obj
             .scale(axes.x.scale)
@@ -270,11 +253,11 @@ var NeedlePlot = function ()
         leftPadding.attr('height', config.height)
 
         if(legend.x.obj)
-            legend.x.obj.attr('x', config.width / 2)
+            legend.x.obj.attr('x', (config.width - config.paddings.left) / 2)
         if(legend.y.obj)
-            legend.y.obj.attr('transform','translate(' + -(config.paddings.left - 15) + ' ' + config.height / 2 + ') rotate(-90)')
+            legend.y.obj.attr('transform','translate(' + -(config.paddings.left - 15) + ' ' + (config.height - config.paddings.top) / 2 + ') rotate(-90)')
 
-        adjustContent()
+        adjust_content()
     }
 
     function create_needles(vis, needle_tooltip)
@@ -459,17 +442,37 @@ var NeedlePlot = function ()
         axes.y.createGroup('y')
 
         axes.x.scale = d3.scale.linear()
-        axes.x.setDomain(0, config.sequenceLength)
+        axes.x.setDomain(0, config.sequence_length)
 
         axes.x.createObj('bottom')
         axes.x.createGroup('x')
     }
 
+    function prepare_zoom(min, max, callback)
+    {
+        return d3.behavior.zoom()
+            .scaleExtent([min, max])
+            .on('zoom', callback)
+            // allows to differentiate between pan-related clicks and normal clicks
+            .on('zoomstart', function(){
+                if(d3.event.sourceEvent) d3.event.sourceEvent.stopPropagation()
+            })
+    }
+
+    function prepare_svg(element)
+    {
+        return d3
+            .select(element)
+            .append('svg')
+            .attr('preserveAspectRatio', 'xMinYMin meet')
+            .attr('class', 'svg-content-responsive needleplot')
+    }
+
     function create_plot()
     {
-        zoom = prepareZoom(config.min_zoom, config.max_zoom, zoomAndMove)
+        zoom = prepare_zoom(config.min_zoom, config.max_zoom, zoomAndMove)
 
-        svg = prepareSVG(config.element)
+        svg = prepare_svg(config.element)
             .call(zoom)
 
         // we don't want to close tooltips after panning (which is set to emit
@@ -499,9 +502,8 @@ var NeedlePlot = function ()
             legend.x.obj = paddings.append('text')
                 .attr('class', 'label')
                 .text(config.legends.x)
-                .attr('x', config.width / 2)
                 .attr('y', config.height - config.paddings.bottom)
-                .attr('dy','2.4em')
+                .attr('dy','3em')
                 .style('text-anchor','middle')
         }
 
@@ -543,9 +545,10 @@ var NeedlePlot = function ()
 			.append('rect')
 			.attr('height', config.site_height)
 
-        _rescalePlot()
+        _rescale_plot()
 
-        config.onload()
+        if(config.onload)
+            config.onload()
     }
 
 	function _setPosition(new_position, stop_callback)
@@ -599,10 +602,10 @@ var NeedlePlot = function ()
 
     function get_constant_scale()
     {
-        return config.max_zoom / scale
+        return config.head_size / scale
     }
 
-    function adjustContent(animate)
+    function adjust_content(animate)
     {
         if(scale === config.max_zoom)
         {
@@ -662,7 +665,7 @@ var NeedlePlot = function ()
     function refresh(animate)
     {
         adjustXAxis(animate)
-        adjustContent(animate)
+        adjust_content(animate)
     }
 
     function zoomAndMove()
@@ -736,7 +739,7 @@ var NeedlePlot = function ()
         init: function(new_config)
         {
             configure(new_config)
-			scaleToNeedles()
+			scale_to_needles()
             create_plot()
 
         },
@@ -772,9 +775,9 @@ var NeedlePlot = function ()
             config.height = height
             config.max_zoom = max_zoom
 
-            _adjustPlotDimensions()
+            _adjust_plot_dimensions()
 
-            _rescalePlot()
+            _rescale_plot()
 
             // refresh zoom and position with current values, with callback and animation
             _setZoomAndMove(scale, position, false, false)

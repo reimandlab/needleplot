@@ -1,44 +1,15 @@
-# Needleplot
-
-[![Code Climate](https://codeclimate.com/github/reimandlab/needleplot/badges/gpa.svg)](https://codeclimate.com/github/reimandlab/needleplot)
-
-A needleplot for mutation data, used by [ActiveDriverDB](https://github.com/reimandlab/ActiveDriverDB).
-The visualisation is built with d3.js library.
-
-Inspired and partially compatibile with [bbglab/muts-needle-plot](https://github.com/bbglab/muts-needle-plot).
-
-Please click here for an [online demo](https://jsfiddle.net/58hy6fet/1/).
-
-## Quick start
-
-Include required files:
-
-```html
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="needleplot.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css">
-```
 
-Add custom styling:
-
-
-```html
 <style>
   .phosphorylation rect, .phosphorylation path{
     fill: rgb(67, 162, 202)
   }
 </style>
-```
 
-Create a wrapper element:
-
-```html
 <div id="needleplot"></div>
-```
 
-Initialise the needleplot and provide your data:
-
-```
 <script>
     var needle_plot = NeedlePlot();
     needle_plot.init({
@@ -64,6 +35,3 @@ Initialise the needleplot and provide your data:
         }
     });
 </script>
-```
-
-Please see the above example [running online](https://jsfiddle.net/58hy6fet/1/).
