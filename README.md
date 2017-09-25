@@ -38,7 +38,7 @@ Create a wrapper element:
 
 Initialise the needleplot and provide your data:
 
-```
+```html
 <script>
     var needle_plot = NeedlePlot();
     needle_plot.init({
