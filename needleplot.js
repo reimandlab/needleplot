@@ -24,6 +24,7 @@ function update_object(modified_obj, modifying_obj)
  * @param {function} tooltip_config.render - generates HTML content of a tooltip
  * for provided d3js object.
  * @param {function} tooltip_config.element - DOM element in which the tooltip should be created.
+ *
  */
 
 var MinimalTooltip = function(tooltip_config)
@@ -72,6 +73,32 @@ var MinimalTooltip = function(tooltip_config)
  * @class
  * @public
  * @param {NeedlePlot.Config} configuration - Configuration for the NeedlePlot
+ *
+ * @playground
+ * var plot = document.createElement('div');
+ * new NeedlePlot({
+ *     element: plot,
+ *     sequence_length: 393,
+ *     mutations_color_map: {
+ *         proximal: 'orange',
+ *         none: 'grey',
+ *         distal: 'yellow',
+ *         'network-rewiring': 'red'
+ *     },
+ *     data: {
+ *         mutations: [
+ *             {ref: "V", pos: 157, alt: "F", value: 6, category: "proximal"},
+ *             {ref: "Y", pos: 234, alt: "C", value: 18, category: "none"},
+ *             {ref: "R", pos: 273, alt: "H", value: 18, category: "distal"},
+ *             {ref: "R", pos: 282, alt: "W", value: 10, category: "network-rewiring"}
+ *         ],
+ *         sites: [
+ *             {start: 142, end: 167, type: "phosphorylation"},
+ *             {start: 262, end: 276, type: "phosphorylation"}
+ *         ]
+ *     }
+ * });
+ * plot;
  */
 var NeedlePlot = function(configuration)
 {
