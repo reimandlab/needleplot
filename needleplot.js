@@ -173,13 +173,43 @@ var NeedlePlot = function(configuration)
      */
 
     /**
+     * Mutation objects are required to initialize the plot.
+     * You can add any number of additional properties and use them later to your liking
+     * (e.g. to generate more elaborated tooltips).
+     * @typedef {Object} Mutation
+     * @memberOf NeedlePlot
+     * @property {number} pos - position of the mutation
+     * @property {number} value - determines height of a needle for this mutation
+     * @property [category] - name or any other identifier of mutations category
+     *           Used to extract color of needle's head for this mutation
+     *           from {@see NeedlePlot.Config.mutations_color_map}
+     * @property {string} [ref] - reference aminoacid
+     * @property {string} [alt] - alternative aminoacid
+     */
+
+    /**
+     * Site objects are required to initialize the plot.
+     * Sites will appear on x axis as small rectangles, spanning from their start to end position.
+     * You can adjust colors of each site type providing custom CSS styles.
+     * Like for mutations, you can provide any number of additional properties
+     * which you can later use for generation of advanced tooltips.
+     * @typedef {Object} Site
+     * @memberOf NeedlePlot
+     * @property {number} start - beginning of the site
+     * @property {number} end - end of the site
+     * @property [type] - site type
+     */
+
+    /**
      * @typedef {Object} Config
      * @memberOf NeedlePlot
-     * @property {HTMLElement} element - REQUIRED an HTML wrapper in which the needleplot will be inserted
-     * @property {number} sequence_length - REQUIRED the length of protein sequence
-     * @property {Object} data - REQUIRED
-     * @property {Object[]} data.mutations - REQUIRED
-     * @property {Object[]} data.sites - REQUIRED
+     * @property {HTMLElement} element - an HTML wrapper in which the needleplot will be created
+     * @property {number} sequence_length - the length of the protein sequence
+     * @property {Object} data - object with array of mutations and sites
+     * @property {Mutation[]} data.mutations - mutations are represented by "needles"
+     *            which vary in height and color of heads (accordingly to provided values).
+     * @property {Site[]} data.sites - sites can be used to represent domains, PTM or binding sites.
+     *           Sites are shown as small rectangles on x-axis.
      * @property {number} [site_height] - the height of site/domain boxes which are placed on x axis
      * @property {number} [animations_speed] - speed of animations in milliseconds
      * @property {{bottom: number, top: number, left: number, right: number}} [paddings] - size of each padding in pixels
@@ -188,7 +218,7 @@ var NeedlePlot = function(configuration)
      * @property {number} [ratio] - width/height ratio
      * @property {number} [min_zoom] - how far away user is allowed to zoom out
      * @property {number} [max_zoom] - how close user is allowed to zoom in
-     * @property {{}} [mutations_color_map] - Category name => color map. Will be used to color needle heads
+     * @property {{string: color}} [mutations_color_map] - category name => color map, used to colorize heads of needles
      * @property {number} [head_size] - size of needles' heads
      * @property {boolean} [use_log] - should logarithmic (base 10) scale be used for y axis (instead of linear one)? Useful for mutations frequency visualisation.
      * @property {string} [y_scale] - 'auto' (default): the y axis be determined automatically, 'manual': I will provide y_scale_min and y_scale_max

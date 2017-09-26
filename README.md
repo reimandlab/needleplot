@@ -1,6 +1,6 @@
 # Needleplot
 
-[![Code Climate](https://codeclimate.com/github/reimandlab/needleplot/badges/gpa.svg)](https://codeclimate.com/github/reimandlab/needleplot)
+[![Code Climate](https://codeclimate.com/github/reimandlab/needleplot/badges/gpa.svg)](https://codeclimate.com/github/reimandlab/needleplot) [![API Doc](https://doclets.io/reimandlab/needleplot/master.svg)](https://doclets.io/reimandlab/needleplot/master)
 
 A needleplot for mutation data, used by [ActiveDriverDB](https://github.com/reimandlab/ActiveDriverDB).
 The visualisation is built with d3.js library.
