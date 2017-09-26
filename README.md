@@ -7,7 +7,7 @@ The visualisation is built with d3.js library.
 
 Inspired and partially compatibile with [bbglab/muts-needle-plot](https://github.com/bbglab/muts-needle-plot).
 
-Please click here for an [online demo](https://jsfiddle.net/58hy6fet/1/).
+Please click here for an [online demo](https://jsfiddle.net/58hy6fet/3/).
 
 ## Quick start
 
@@ -38,7 +38,7 @@ Create a wrapper element:
 
 Initialise the needleplot and provide your data:
 
-```
+```html
 <script>
     var needle_plot = NeedlePlot();
     needle_plot.init({
@@ -66,4 +66,4 @@ Initialise the needleplot and provide your data:
 </script>
 ```
 
-Please see the above example [running online](https://jsfiddle.net/58hy6fet/1/).
+Please see the above example [running online](https://jsfiddle.net/58hy6fet/3/).
