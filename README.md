@@ -7,7 +7,7 @@ The visualisation is built with d3.js library.
 
 Inspired and partially compatibile with [bbglab/muts-needle-plot](https://github.com/bbglab/muts-needle-plot).
 
-Please click here for an [online demo](https://jsfiddle.net/58hy6fet/3/).
+Please click here for an [online demo](https://jsfiddle.net/58hy6fet/4/).
 
 ## Quick start
 
@@ -40,8 +40,7 @@ Initialise the needleplot and provide your data:
 
 ```html
 <script>
-    var needle_plot = NeedlePlot();
-    needle_plot.init({
+    var needle_plot = NeedlePlot({
         element: document.getElementById('needleplot'),
         sequence_length: 393,
         mutations_color_map: {
@@ -66,4 +65,4 @@ Initialise the needleplot and provide your data:
 </script>
 ```
 
-Please see the above example [running online](https://jsfiddle.net/58hy6fet/3/).
+Please see the above example [running online](https://jsfiddle.net/58hy6fet/4/).
