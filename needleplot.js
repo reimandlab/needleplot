@@ -1,5 +1,6 @@
 /**
  * Simplified, shallow equivalent of jquery.extend
+ * @private
  * @param modified_obj
  * @param modifying_obj
  */
@@ -14,7 +15,65 @@ function update_object(modified_obj, modifying_obj)
     }
 }
 
-var NeedlePlot = function ()
+/**
+ * Minimal (but no shortest possible) implementation of {@link NeedlePlot.Tooltip} type for use with the {@link NeedlePlot}.
+ *
+ * @class
+ * @type {NeedlePlot.Tooltip}
+ * @param {Object} tooltip_config - configuration of the tooltip
+ * @param {function} tooltip_config.render - generates HTML content of a tooltip
+ * for provided d3js object.
+ * @param {function} tooltip_config.element - DOM element in which the tooltip should be created.
+ */
+
+var MinimalTooltip = function(tooltip_config)
+{
+    var self = this
+
+    this.moveToPointer = function(){
+        self.tooltip
+            .style('left', d3.event.clientX + 'px')
+            .style('top', d3.event.clientY + 'px')
+    }
+
+    this.show = function (d) {
+        self.tooltip.html(self.render(d))
+        self.tooltip.style('opacity', 1)
+        self.moveToPointer()
+    }
+
+    this.hide = function () {
+        self.tooltip.style('opacity', 0)
+    }
+
+    /**
+     * Bind the mouseout/mouseover events of selection to private methods: show/hide respectively.
+     * @param selection - d3.js selection with objects to which mouseover and mouseout events will be bound.
+     */
+    this.bind = function(selection)
+    {
+        self.tooltip = d3.select('body')
+            .append('div')
+            .attr('class', 'tooltip')
+            .style('pointer-events', 'none')
+            .style('position', 'fixed')
+
+        self.render = tooltip_config.render
+        self.hide()
+
+        selection.on('mouseover', self.show)
+        selection.on('mouseout', self.hide)
+    }
+}
+
+/**
+ * Initializes the NeedlePlot using provided configuration.
+ * @constructor
+ * @class
+ * @public
+ * @param {NeedlePlot.Config} configuration - Configuration for the NeedlePlot
+ */
+var NeedlePlot = function(configuration)
 {
     var svg, zoom, vis, vertical_scalable, unit
     var scale = 1
@@ -24,12 +83,10 @@ var NeedlePlot = function ()
     var paddings, needles, sites, site_boxes, leftPadding;
 
     var legend = {
-        x:
-        {
+        x: {
             obj: null
         },
-        y:
-        {
+        y: {
             obj: null
         }
     }
@@ -82,75 +139,90 @@ var NeedlePlot = function ()
         y: new Axis()
     }
 
-    var MinimalTooltip = function(tooltip_config)
-    {
-        var self = this
+    /**
+     * Tooltip interface required for tooltips provided to {@link NeedlePlot} instances at initialization.
+     * The NeedlePlot comes with a simple implementation of the tooltip interface: {@link MinimalTooltip}.
+     *
+     * For more advanced implementation example please refer to [ActiveDriver's tooltip.js]{@link https://github.com/reimandlab/ActiveDriverDB/blob/master/website/static/tooltip.js}.
+     * @typedef Tooltip
+     * @memberOf NeedlePlot
+     * @property {function} [moveToElement] - callback handling change caused by any of the plot transforming events
+     * (i.e. zoom or move) which may displace the tooltip (relatively to the element it was originally placed upon)
+     * @property {function} moveToPointer - callback for mouse movement event
+     * @property {function} bind - should bind the tooltip to provided d3 selection.
+     * For example implementation see {@link MinimalTooltip#bind}.
+     */
 
-        this.moveToElement = function(){}
-        this.moveToPointer = function(){
-            self.tooltip
-                .style('left', d3.event.clientX + 'px')
-                .style('top', d3.event.clientY + 'px')
-        }
 
-        this.show = function (d) {
-            self.tooltip.html(self.render(d))
-            self.tooltip.style('opacity', 1)
-            self.moveToPointer()
-        }
+    /**
+     * Callback called after the zoom is changed
+     *
+     * @callback zoom_callback
+     * @memberOf NeedlePlot
+     * @param {number} new_zoom
+     * @param {boolean} stop_callback
+     */
 
-        this.hide = function () {
-            self.tooltip.style('opacity', 0)
-        }
+    /**
+     * Callback called after the plot is scrolled horizontally
+     *
+     * @callback position_callback
+     * @memberOf NeedlePlot
+     * @param {number} new_position - position (in aminoacids) of the first visible aminoacid in the plot
+     * @param {boolean} stop_callback
+     */
 
-        this.bind = function(selection)
-        {
-            self.tooltip = d3.select(config.element)
-                .append('div')
-                .attr('class', 'tooltip')
-                .style('pointer-events', 'none')
-                .style('position', 'fixed')
+    /**
+     * @typedef {Object} Config
+     * @memberOf NeedlePlot
+     * @property {HTMLElement} element - REQUIRED an HTML wrapper in which the needleplot will be inserted
+     * @property {number} sequence_length - REQUIRED the length of protein sequence
+     * @property {Object} data - REQUIRED
+     * @property {Object[]} data.mutations - REQUIRED
+     * @property {Object[]} data.sites - REQUIRED
+     * @property {number} [site_height] - the height of site/domain boxes which are placed on x axis
+     * @property {number} [animations_speed] - speed of animations in milliseconds
+     * @property {{bottom: number, top: number, left: number, right: number}} [paddings] - size of each padding in pixels
+     * @property {number} [width] - width in pixels
+     * @property {number} [height] - height in pixels (or null if should be determined from ratio)
+     * @property {number} [ratio] - width/height ratio
+     * @property {number} [min_zoom] - how far away user is allowed to zoom out
+     * @property {number} [max_zoom] - how close user is allowed to zoom in
+     * @property {{}} [mutations_color_map] - Category name => color map. Will be used to color needle heads
+     * @property {number} [head_size] - size of needles' heads
+     * @property {boolean} [use_log] - should logarithmic (base 10) scale be used for y axis (instead of linear one)? Useful for mutations frequency visualisation.
+     * @property {string} [y_scale] - 'auto' (default): the y axis be determined automatically, 'manual': I will provide y_scale_min and y_scale_max
+     * @property {number} [y_scale_min]
+     * @property {number} [y_scale_max]
+     * @property {{x: string, y: string}} [legends] - text to show as legend beside y and below x axes
+     * @property {NeedlePlot.Tooltip} [needle_tooltip]
+     * @property {NeedlePlot.Tooltip} [site_tooltip]
+     * @property {NeedlePlot.zoom_callback} [zoom_callback] - will be called on zoom event
+     * @property {NeedlePlot.position_callback} [position_callback] - will be called on move event
+     */
 
-            self.render = tooltip_config.render
-            self.hide()
 
-            selection.on('mouseover', self.show)
-            selection.on('mouseout', self.hide)
-        }
-    }
-
+    /**
+     * @type {Config}
+     * @private
+     */
     var config = {
-        use_log: false, // should logarithmic (base 10) scale by used instead of linear?
+        use_log: false,
         site_height: 10,
         animations_speed: 300,
-        // 90 is width of description
         paddings: {bottom: 60, top: 30, left: 90, right: 5},
         y_scale: 'auto',
-        sequence_length: null,
-        element: null,
-        data: {
-            mutations: null,
-            sites: null
-        },
         legends: {x: 'Sequence', y: '# of mutations'},
         width: 600,
-        height: null,
-        zoom_callback: null,
-        position_callback: null,
         ratio: 0.5,
         min_zoom: 1,
         max_zoom: 6,
         head_size: 6,
-        // colors of sites are determined by their's css class
-        mutations_color_map: {
-            // mutation_category: color
-        },
-        // tooltips
         needle_tooltip: new MinimalTooltip({render: function(mutation){return mutation.pos}}),
         site_tooltip: new MinimalTooltip({render: function(site){return site.type}})
     }
 
-    function _adjust_plot_dimensions()
+    var _adjust_plot_dimensions = function()
     {
         if(!config.width && !config.height)
         {
@@ -171,14 +243,13 @@ var NeedlePlot = function ()
         }
     }
 
-    function configure(new_config)
+    var configure = function(new_config)
     {
         // Automatic configuration update:
         update_object(config, new_config)
 
         // Manual configuration patching:
         _adjust_plot_dimensions()
-
     }
 
     function is_color_dark(color)
@@ -200,7 +271,7 @@ var NeedlePlot = function ()
 		}
     }
 
-    function _rescale_plot()
+    var _rescale_plot = function()
     {
         svg
             .attr('viewBox', '0 0 ' + config.width + ' ' + config.height)
@@ -459,7 +530,7 @@ var NeedlePlot = function ()
             })
     }
 
-    function prepare_svg(element)
+    var prepare_svg = function(element)
     {
         return d3
             .select(element)
@@ -468,7 +539,7 @@ var NeedlePlot = function ()
             .attr('class', 'svg-content-responsive needleplot')
     }
 
-    function create_plot()
+    var create_plot = function()
     {
         zoom = prepare_zoom(config.min_zoom, config.max_zoom, zoomAndMove)
 
@@ -519,9 +590,11 @@ var NeedlePlot = function ()
         needles = create_needles(vis, config.needle_tooltip)
 
         dispatch.on('zoomAndMove', function(){
-            config.needle_tooltip.moveToElement()
-            config.site_tooltip.moveToElement()
-        })
+            if(config.needle_tooltip.moveToElement)
+                config.needle_tooltip.moveToElement()
+            if(config.site_tooltip.moveToElement)
+                config.site_tooltip.moveToElement()
+        });
 
         sites = vis.selectAll('.site')
             .data(config.data.sites)
@@ -551,7 +624,7 @@ var NeedlePlot = function ()
             config.onload()
     }
 
-	function _setPosition(new_position, stop_callback)
+	var _setPosition = function(new_position, stop_callback)
 	{
 		var boundary = posToX(axes.x.getShiftLimit()) * scale
 
@@ -572,7 +645,7 @@ var NeedlePlot = function ()
         }
 	}
 
-    function canvasAnimated(animate)
+    var canvasAnimated = function(animate)
     {
         var t;
         if(animate)
@@ -587,25 +660,25 @@ var NeedlePlot = function ()
         return t
     }
 
-    function changeTicksCount(ticks_count)
+    var changeTicksCount = function(ticks_count)
     {
         axes.x.obj.ticks(ticks_count)
         canvasAnimated(true).select('.x.axis').call(axes.x.obj)
     }
 
-    function transform_needle_head(d, x_pos)
+    var transform_needle_head = function(d, x_pos)
     {
         if(!x_pos)
             x_pos = 0
         return 'translate('  + [x_pos, axes.y.scale(d.value)] + ')scale(1, '+ scale +')'
     }
 
-    function get_constant_scale()
+    var get_constant_scale = function()
     {
         return config.head_size / scale
     }
 
-    function adjust_content(animate)
+    var adjust_content = function(animate)
     {
         if(scale === config.max_zoom)
         {
@@ -644,12 +717,12 @@ var NeedlePlot = function ()
             .attr('dy', +head_size/2 + 'px')
     }
 
-	function posToX(pos)
+	var posToX = function(pos)
 	{
 		return pos * unit
 	}
 
-    function xToPos(coord)
+    var xToPos = function(coord)
     {
         return -(coord / unit) / scale
     }
@@ -662,19 +735,19 @@ var NeedlePlot = function ()
 		canvas.select('.x.axis').call(axes.x.obj)
     }
 
-    function refresh(animate)
+    var refresh = function(animate)
     {
         adjustXAxis(animate)
         adjust_content(animate)
     }
 
-    function zoomAndMove()
+    var zoomAndMove = function()
     {
         // with callback, without animation
         _setZoomAndMove(d3.event.scale, d3.event.translate[0], false, true)
     }
 
-    function _setZoomAndMove(new_scale, new_position, stop_callback, stop_animation, recalculate_position)
+    var _setZoomAndMove = function(new_scale, new_position, stop_callback, stop_animation, recalculate_position)
     {
         // zoom level restricts the leftmost and rightmost position which can be set,
         // so setting zoom level needs to be evaluated first
@@ -703,7 +776,7 @@ var NeedlePlot = function ()
         dispatch.zoomAndMove(this)
     }
 
-	function _setZoom(new_scale, stop_callback, recalculate_position)
+	var _setZoom = function(new_scale, stop_callback, recalculate_position)
 	{
         if(scale === new_scale)
             return
@@ -730,45 +803,106 @@ var NeedlePlot = function ()
         }
 	}
 
-	function _positionFromAAPosition(aa_position)
+	var _positionFromAAPosition = function(aa_position)
     {
         return posToX(-aa_position) * scale
     }
 
-    var publicSpace = {
-        init: function(new_config)
-        {
-            configure(new_config)
-			scale_to_needles()
-            create_plot()
+    var init = function(config)
+    {
+        configure(config)
+        scale_to_needles()
+        create_plot()
 
-        },
+    }
+    var publicSpace = {
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         * @param {Number} new_scale
+         * @param {Boolean} stop_callback
+         * @param {Boolean} recalculate_position
+         * @param {Boolean} animate
+         */
         setZoom: function(new_scale, stop_callback, recalculate_position, animate){
             _setZoom(new_scale, stop_callback, recalculate_position)
             // adjust axes
             refresh(animate)
         },
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         * @return {Number}
+         */
         getZoom: function () {
             return scale
         },
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         * @param {Number} position
+         * @param {Boolean} stop_callback
+         * @param {Boolean} animate
+         */
 		setPosition: function(position, stop_callback, animate) {
             _setPosition(position, stop_callback)
             refresh(animate)
         },
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         * @param {Number} aa_position
+         * @param {Boolean} stop_callback
+         * @param {Boolean} animate
+         */
         setAAPosition: function(aa_position, stop_callback, animate)
         {
             var converted_position = _positionFromAAPosition(aa_position)
             _setPosition(converted_position, stop_callback)
             refresh(animate)
         },
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         * @param {Number} new_zoom
+         * @param {Number} aa_position
+         * @param {Boolean} stop_callback
+         * @param {Boolean} animate
+         */
         setZoomAndAAPosition: function(new_zoom, aa_position, stop_callback, animate)
         {
             var converted_position = _positionFromAAPosition(aa_position)
             _setZoomAndMove(new_zoom, converted_position, stop_callback, !animate, true)
         },
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         * @returns {Number} current aminoacid position
+         */
         getAAPosition: function () {
             return xToPos(position)
         },
+        /**
+         * Rescale plot to given dimensions
+         * @memberOf NeedlePlot
+         * @instance
+         * @method
+         * @param {Number} width
+         * @param {Number} height
+         * @param {Number} max_zoom
+         */
         setSize: function(width, height, max_zoom)
         {
             config.width = width
@@ -782,6 +916,12 @@ var NeedlePlot = function ()
             // refresh zoom and position with current values, with callback and animation
             _setZoomAndMove(scale, position, false, false)
         },
+        /**
+         * @memberOf NeedlePlot
+         * @public
+         * @instance
+         * @method
+         */
         destroy: function()
         {
             svg.remove();
@@ -789,6 +929,8 @@ var NeedlePlot = function ()
             //element.parentNode.removeChild(element);
         }
     }
+
+    init(configuration)
 
     return publicSpace
 }

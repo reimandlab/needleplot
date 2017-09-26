@@ -11,8 +11,7 @@
 <div id="needleplot"></div>
 
 <script>
-    var needle_plot = NeedlePlot();
-    needle_plot.init({
+    var needle_plot = new NeedlePlot({
         element: document.getElementById('needleplot'),
         sequence_length: 393,
         mutations_color_map: {
