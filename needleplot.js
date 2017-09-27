@@ -75,7 +75,7 @@ var MinimalTooltip = function(tooltip_config)
  * @param {NeedlePlot.Config} configuration - Configuration for the NeedlePlot
  *
  * @playground
- * var NeedlePlot = require("notebook")("krassowski/needleplot-example");
+ * var NeedlePlot = require("@runkit/krassowski/needleplot/1.0.0");
  * new NeedlePlot({
  *     element: plot,
  *     sequence_length: 393,
