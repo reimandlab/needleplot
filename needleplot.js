@@ -77,7 +77,7 @@ var MinimalTooltip = function(tooltip_config)
  * @playground
  * var NeedlePlot = require("@runkit/krassowski/needleplot/1.0.0");
  * new NeedlePlot({
- *     element: plot,
+ *     element: '<substitute this string with a DOM element>',
  *     sequence_length: 393,
  *     mutations_color_map: {
  *         proximal: 'orange',
