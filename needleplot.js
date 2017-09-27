@@ -23,7 +23,31 @@ function update_object(modified_obj, modifying_obj)
  * @param {Object} tooltip_config - configuration of the tooltip
  * @param {function} tooltip_config.render - generates HTML content of a tooltip
  * for provided d3js object.
- * @param {function} tooltip_config.element - DOM element in which the tooltip should be created.
+ *
+ * @playground
+ * var NeedlePlot = require("@runkit/krassowski/needleplot/1.0.0");
+ * // This an interactive example. See example of `NeedlePlot()` for explanations.
+ * NeedlePlot({
+ *     sequence_length: 393,
+ *     data: {
+ *         mutations: [
+ *             {ref: "R", pos: 282, alt: "W", value: 10, category: "network-rewiring"}
+ *         ],
+ *         sites: [
+ *             {start: 142, end: 167, type: "phosphorylation", my_property: 'some-value'},
+ *         ]
+ *     },
+ *     mutation_tooltip: MinimalTooltip({
+ *         render: function(mut){
+ *            return 'My tooltip for mutation: ' + mut.ref + mut.pos + mut.alt + ' ' + mut.category
+ *         }
+ *     }),
+ *     mutation_tooltip: MinimalTooltip({
+ *         render: function(site){
+ *            return 'My tooltip for site: ' + site.type + ' ' + site.my_property
+ *         }
+ *     })
+ * });
  *
  */
 
@@ -76,7 +100,11 @@ var MinimalTooltip = function(tooltip_config)
  *
  * @playground
  * var NeedlePlot = require("@runkit/krassowski/needleplot/1.0.0");
- * new NeedlePlot({
+ * // This an interactive example. To embed on a website you will need to:
+ * // - set up minimal HTML code (instead of the `require` above) - see `example.html`
+ * // - use "new" keyword before `NeedlePlot()`
+ * // - specify DOM element (e.g. `element: document.getElemenbtById('some_id')`)
+ * NeedlePlot({
  *     element: '<substitute this string with a DOM element>',
  *     sequence_length: 393,
  *     mutations_color_map: {
