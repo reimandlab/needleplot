@@ -458,12 +458,7 @@ var NeedlePlot = function(configuration)
             .attr('class', 'head')
             .attr('id', function(d){ return 'h_' + d.id })
 
-        head.append('circle')
-            .attr('fill', function(d)
-                {
-                    return config.mutations_color_map[d.category]
-                }
-            )
+        var circle = head.append('circle')
 
         // add count of overlaying heads to those
         // which are overlaid / overlaying
@@ -475,17 +470,25 @@ var NeedlePlot = function(configuration)
             return head_group.length > 1
         }
 
-        head
+        var overlap_counts =head
             .filter(is_overlaying)
             .append('text')
             .text(function(d){
                 var key = d.pos + ':' + d.value
                 return head_groups[key].length
             })
-            .attr('fill', function(d){
+
+        if(config.mutations_color_map)
+        {
+            circle.attr('fill', function (d) {
+                    return config.mutations_color_map[d.category]
+                }
+            )
+            overlap_counts.attr('fill', function(d){
                 var head_color = config.mutations_color_map[d.category]
                 return (is_color_dark(head_color) ? 'white' : 'black')
             })
+        }
 
         head
             .filter(is_overlaying)
