@@ -28,7 +28,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 <div style="text-align:right;position:relative;top:-50px;right:10px;">
-    <a href="https://jsfiddle.net/58hy6fet/6/" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
+    <a href="https://jsfiddle.net/58hy6fet/6/" target="_blank" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
 </div>
 
 
@@ -59,7 +59,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 <div style="text-align:right;position:relative;top:-50px;right:10px;">
-    <a href="https://jsfiddle.net/58hy6fet/7/" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
+    <a href="https://jsfiddle.net/58hy6fet/7/" target="_blank" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
 </div>
 
 ### Custom tooltips
@@ -96,7 +96,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 <div style="text-align:right;position:relative;top:-50px;right:10px;">
-    <a href="https://jsfiddle.net/58hy6fet/9/" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
+    <a href="https://jsfiddle.net/58hy6fet/9/" target="_blank" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
 </div>
 
 ### Custom axes description
@@ -122,7 +122,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 <div style="text-align:right;position:relative;top:-50px;right:10px;">
-    <a href="https://jsfiddle.net/58hy6fet/8/" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
+    <a href="https://jsfiddle.net/58hy6fet/8/" target="_blank" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
 </div>
 
 ### Customize needle heads
@@ -153,7 +153,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 <div style="text-align:right;position:relative;top:-50px;right:10px;">
-    <a href="https://jsfiddle.net/58hy6fet/10/" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
+    <a href="https://jsfiddle.net/58hy6fet/10/" target="_blank" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
 </div>
 
 
@@ -193,5 +193,5 @@ var needle_plot = new NeedlePlot({
 ```
 
 <div style="text-align:right;position:relative;top:-50px;right:10px;">
-    <a href="https://jsfiddle.net/58hy6fet/11/" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
+    <a href="https://jsfiddle.net/58hy6fet/11/" target="_blank" style="background:white;padding:5px 10px;border-radius:5px">Run &gt;&gt;</a>
 </div>
