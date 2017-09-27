@@ -8,6 +8,7 @@ The visualisation is built with d3.js library.
 Inspired and partially compatibile with [bbglab/muts-needle-plot](https://github.com/bbglab/muts-needle-plot).
 
 Please click here for an [online demo](https://jsfiddle.net/58hy6fet/4/).
+For more examples, please see [examples page](https://doclets.io/reimandlab/needleplot/master/examples) in documentation.
 
 ## Quick start
 

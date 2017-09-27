@@ -1,4 +1,5 @@
 files:
   - needleplot.js
 articles:
-  - Overview: README.md 
+  - Overview: README.md
+  - Examples: examples.md

@@ -32,17 +32,18 @@ function update_object(modified_obj, modifying_obj)
  *             {ref: "R", pos: 282, alt: "W", value: 10, category: "network-rewiring"}
  *         ],
  *         sites: [
- *             {start: 142, end: 167, type: "phosphorylation", my_property: "some-value"},
+ *             {start: 142, end: 167, type: 'acetylation', my_property: "some-value"},
  *         ]
  *     },
- *     mutation_tooltip: new MinimalTooltip({
+ *     needle_tooltip: new MinimalTooltip({
  *         render: function(mut){
- *            return "My tooltip for mutation: " + mut.ref + mut.pos + mut.alt + " " + mut.category
+ *            var name = mut.ref + mut.pos + mut.alt;
+ *            return "My tooltip for mutation: " + name + " " + mut.category;
  *         }
  *     }),
- *     mutation_tooltip: new MinimalTooltip({
+ *     site_tooltip: new MinimalTooltip({
  *         render: function(site){
- *            return "My tooltip for site: " + site.type + " " + site.my_property
+ *            return "My tooltip for site: " + site.type + " " + site.my_property;
  *         }
  *     })
  * });
