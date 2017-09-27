@@ -4,12 +4,12 @@
 
 Please read [Quick start](https://github.com/reimandlab/needleplot#quick-start) and see this [online demo](https://jsfiddle.net/58hy6fet/4/) demo before proceeding.
 
-For brevity the basic set-up (including JavaScript files, CSS styles and HTML) was omitted in the examples below.
+For brevity the basic set-up (JavaScript, CSS, and HTML) is omitted in the examples below.
 
 
-#### Needleplot based on mutations' count
+### Needleplot based on mutations' count
 
-Just specify mutation count in the `value` field.
+Specify mutation count in the `value` field.
 
 [Run →](https://jsfiddle.net/58hy6fet/6/)
 
@@ -30,14 +30,14 @@ var needle_plot = new NeedlePlot({
 ```
 
 
-#### Needleplot based on mutations' frequency
+### Needleplot based on mutations' frequency
 
 To represent mutations' frequencies you should:
- - Provide mutation frequency in `value` field
- - Change y-axis description to let user know that it represents frequencies
- - Add option `use_log=True` (logarithmic scale is the best to represents values from multiple orders of magnitude such as mutations frequency)
+ - provide mutation frequency in `value` field,
+ - change y-axis description to let user know that it represents frequencies,
+ - add option `use_log=True` (logarithmic scale is the best to represents values from multiple orders of magnitude such as mutations frequency).
 
-[Run →](https://jsfiddle.net/58hy6fet/7/)
+<div style="text-align: right; top: -20px"><a href="https://jsfiddle.net/58hy6fet/7/">Run →</a></div>
 
 
 ```js
@@ -59,7 +59,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 
-#### Custom tooltips
+### Custom tooltips
 
 You can either use provided [`MinimalTooltip`](https://doclets.io/reimandlab/needleplot/master#dl-MinimalTooltip) class to create a custom tooltips or create custom, more advanced one.
 Please see [`Tooltip` interface](https://doclets.io/reimandlab/needleplot/master#dl-NeedlePlot-Tooltip) documentation if you wish to hook-in advanced tooltips.
@@ -94,7 +94,7 @@ var needle_plot = new NeedlePlot({
 });
 ```
 
-#### Custom axes description
+### Custom axes description
 
 Use `legends: {x: 'text for x axis', y: 'text for y axis'}` to set axes descriptions.
 
@@ -119,7 +119,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 
-#### Customize needle heads
+### Customize needle heads
 
 You can set size of needle heads with `head_size` option.
 You can set colors, assigning mutations to categories and providing a color specification with `mutations_color_map`.
@@ -149,7 +149,7 @@ var needle_plot = new NeedlePlot({
 ```
 
 
-#### Visualise domains or sites
+### Visualise domains or sites
 
 Sites or domain are provided with `data.sites` option.
 You need to specify `start` and `end` of each site.
