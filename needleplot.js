@@ -24,31 +24,28 @@ function update_object(modified_obj, modifying_obj)
  * @param {function} tooltip_config.render - generates HTML content of a tooltip
  * for provided d3js object.
  *
- * @playground
- * var NeedlePlot = require("@runkit/krassowski/needleplot/1.0.0");
- * // This an interactive example. See example of `NeedlePlot()` for explanations.
- * NeedlePlot({
+ * @example
+ * new NeedlePlot({
  *     sequence_length: 393,
  *     data: {
  *         mutations: [
  *             {ref: "R", pos: 282, alt: "W", value: 10, category: "network-rewiring"}
  *         ],
  *         sites: [
- *             {start: 142, end: 167, type: "phosphorylation", my_property: 'some-value'},
+ *             {start: 142, end: 167, type: "phosphorylation", my_property: "some-value"},
  *         ]
  *     },
- *     mutation_tooltip: MinimalTooltip({
+ *     mutation_tooltip: new MinimalTooltip({
  *         render: function(mut){
- *            return 'My tooltip for mutation: ' + mut.ref + mut.pos + mut.alt + ' ' + mut.category
+ *            return "My tooltip for mutation: " + mut.ref + mut.pos + mut.alt + " " + mut.category
  *         }
  *     }),
- *     mutation_tooltip: MinimalTooltip({
+ *     mutation_tooltip: new MinimalTooltip({
  *         render: function(site){
- *            return 'My tooltip for site: ' + site.type + ' ' + site.my_property
+ *            return "My tooltip for site: " + site.type + " " + site.my_property
  *         }
  *     })
  * });
- *
  */
 
 var MinimalTooltip = function(tooltip_config)
