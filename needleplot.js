@@ -1002,6 +1002,7 @@ var NeedlePlot = function(configuration)
             _setZoomAndMove(scale, position, false, false)
         },
         /**
+         * Remove created DOM elements including tooltips (if support .remove method)
          * @memberOf NeedlePlot
          * @public
          * @instance
@@ -1009,9 +1010,16 @@ var NeedlePlot = function(configuration)
          */
         destroy: function()
         {
-            svg.remove();
-            //var element = svg.node()
-            //element.parentNode.removeChild(element);
+            var tooltips = [config.needle_tooltip, config.site_tooltip]
+            var tooltip
+
+            while(tooltip = tooltips.pop())
+                if (tooltip && tooltip.remove)
+                    tooltip.remove()
+
+            svg.remove()
+
+            tooltip = null
         }
     }
 
