@@ -422,7 +422,7 @@ var NeedlePlot = function(configuration)
             )
             .enter()
             .append('g')
-            .attr('class', 'needle')
+            .attr('class', function(d){return d.background ? 'needle background' : 'needle'})
             .call(needle_tooltip.bind)
 
         needles
