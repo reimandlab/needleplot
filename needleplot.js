@@ -574,6 +574,7 @@ var NeedlePlot = function(configuration)
                 if(cnt % config.log_ticks_per_label !== 0)
                     return ''
 
+                d /= 100
                 if(d < 0.0001)
                     return d3.format('.3%')(d)
                 if(d < 0.001)
