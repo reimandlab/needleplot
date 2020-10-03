@@ -119,8 +119,8 @@ var MinimalTooltip = function(tooltip_config)
  *             {ref: "R", pos: 282, alt: "W", value: 10, category: "network-rewiring"}
  *         ],
  *         sites: [
- *             {start: 142, end: 167, type: "phosphorylation"},
- *             {start: 262, end: 276, type: "phosphorylation"}
+ *             {start: 142, end: 167, type: ["phosphorylation"]},
+ *             {start: 262, end: 276, type: ["phosphorylation"]}
  *         ]
  *     }
  * });
@@ -687,7 +687,7 @@ var NeedlePlot = function(configuration)
             .append('g')
             .attr('class', function(d)
                 {
-                    if(d.type.indexOf(',') === -1)
+                    if(d.type.length === 1)
                         return 'site '+ d.type
                     else
                         return 'site multi_ptm'
