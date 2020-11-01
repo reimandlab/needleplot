@@ -688,7 +688,7 @@ var NeedlePlot = function(configuration)
             .attr('class', function(d)
                 {
                     if(d.type.length === 1)
-                        return 'site ' + d.type.replace('(', '').replace(')', '')
+                        return ('site ' + d.type).replace('(', '').replace(')', '')
                     else
                         return 'site multi_ptm'
                 }
